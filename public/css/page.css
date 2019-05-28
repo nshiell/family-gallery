@@ -1,0 +1,59 @@
+body {
+  background-color: #715946;
+}
+
+.icons {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  font-size: 30px;
+}
+.icons li {
+  padding: 0;
+}
+
+.nav-container {
+  float: left;
+  width: 230px;
+  height: 100vh;
+  color: rgba(255, 255, 255, 0.72);
+  /*nav:hover {
+      filter: blur(0px);
+      transition-duration: 0.2s;
+      transition-property: filter;
+  }*/
+}
+.nav-container a {
+  color: rgba(255, 255, 255, 0.3);
+}
+.nav-container a :hover {
+  color: #FFFFFF;
+}
+.nav-container nav {
+  /*transition-duration: 15s;
+  transition-property: filter;*/
+  background-image: url("/pics/family.png");
+  background-position: 50% 50%;
+  background-size: 230px 100vh;
+  width: 230px;
+  height: 100vh;
+  position: fixed;
+}
+.nav-container nav::before {
+  z-index: -1;
+  position: fixed;
+  background: linear-gradient(to bottom, #464961 0%, #464961 22%, rgba(70, 73, 97, 0.93) 32%, rgba(70, 73, 97, 0.93) 68%, #464961 78%, #464961 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  width: 230px;
+  height: 100%;
+  content: "";
+  display: block;
+  opacity: 0.985;
+}
+
+main {
+  height: 100vh;
+  float: left;
+}
+
+/*# sourceMappingURL=page.css.map */
