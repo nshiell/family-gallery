@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="stylesheet" href="/css/normalize.css" />
+    <link rel="stylesheet" href="/css/icons.css" />
+    <link rel="stylesheet" href="/css/flexboxgrid.css" />
+    <link rel="stylesheet" href="/css/page.css" />
+    {% block stylesheets %}{% endblock %}
+    {% block javascripts %}{% endblock %}
+</head>
+<body>
+    <div class="nav-container">
+        <nav>
+            <ul class="row icons">
+                <li class="col-xs">
+                    <a href="/profile">
+                        <i class="icon ion-ios-person"></i>
+                    </a>
+                </li>
+                <li class="col-xs">
+                    <a href="/logout">
+                        <i class="icon ion-android-add-circle"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+
+</body>
+</html>
