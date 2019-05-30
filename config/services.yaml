@@ -46,6 +46,11 @@ services:
             $targetDirectory: '%images_dir%'
             $imageMaxSizes: '%image_max_sizes%'
 
+    App\Service\ImageVariantCollectionFactory:
+        arguments:
+            $targetDirectory: '%images_dir%'
+            $imageMaxSizes: '%image_max_sizes%'
+
     App\EventListener\ImageUploadListener:
         tags:
             - { name: doctrine.event_listener, event: prePersist }

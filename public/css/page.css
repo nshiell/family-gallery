@@ -32,7 +32,6 @@ body {
 .nav-container nav {
   /*transition-duration: 15s;
   transition-property: filter;*/
-  background-image: url("/pics/family.png");
   background-position: 50% 50%;
   background-size: 230px 100vh;
   width: 230px;
