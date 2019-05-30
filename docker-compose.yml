@@ -1,0 +1,36 @@
+version: '3'
+services:
+    apache:
+        build: .docker/apache
+        container_name: family_gallery_apache
+        ports:
+          - 8090:80
+        volumes:
+          - .docker/config/vhosts:/etc/apache2/sites-enabled
+          - .:/home/wwwroot/sf4
+        depends_on:
+          - php
+
+    mysql:
+        image: mysql:8
+        container_name: family_gallery_mysql
+        ports:
+            - 3309:3306
+        volumes:
+            - .docker/data/db:/var/lib/mysql
+        command:
+            - "--default-authentication-plugin=mysql_native_password"
+            - "--lower_case_table_names=1"        
+        environment:
+            MYSQL_ROOT_PASSWORD: sdfge4564erth
+            MYSQL_DATABASE: family_gallery
+            MYSQL_USER: sergsdfAAdfgfsfdg
+            MYSQL_PASSWORD: fdsgsERWert456345sfgsd
+
+    php:
+        build: .docker/php
+        container_name: family_gallery_php
+        volumes:
+          - .:/home/wwwroot/sf4
+        depends_on:
+          - mysql
