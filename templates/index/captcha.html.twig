@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Captcha{% endblock %}
+
+{% block body %}
+    <form action="/" method="post" style="background-color: #BBBBBB; padding: 30px">
+        <h1>Firstly prove your a human</h1>
+        <p>{{ error }}</p>
+        <label>
+            What is:
+            {{ numbers[0]}} + {{ numbers[1]}} =
+            <input type="number" name="sum" style="width: 50px"  min="0" max="1000" />
+            <input type="submit" value="Post Answer" />
+        </label>
+    </form>
+
+    <p>
+        <a href="/login" style="color: white">...or Login</a>
+    </p>
+{% endblock %}

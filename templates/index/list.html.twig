@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Image index{% endblock %}
+
+{% block body %}
+    <ul>
+        {% for image in images %}
+            <li>
+                <a href="{{ path('image_variant_show', {
+                    'id'      : image.id,
+                    'variant' : 'large',
+                    'filename': image.originalFilenameReal
+                    }) }}">
+                    <img src="{{ path('image_variant_show', {
+                        'id'      : image.id,
+                        'variant' : 'thumbnail',
+                        'filename': image.originalFilenameReal
+                        }) }}" alt="{{ image.originalFilenameReal }}" />
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
