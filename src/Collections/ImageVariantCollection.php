@@ -25,7 +25,7 @@ class ImageVariantCollection implements \ArrayAccess
 
 //        $this->variants = array_fill_keys($variants, null);
         /** @todo pass in the guessed extension */
-        if ($extension == 'jpg') {
+        if (strtolower($extension) == 'jpg') {
             $extension = 'jpeg';
         }
         $this->extension = $extension;
