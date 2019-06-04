@@ -21,6 +21,9 @@ class ImageVariantController extends AbstractController
     {
         try {
             $file = $image->getVariantCollection()->getFile($variant);
+            if (!$file) {
+                throw new \InvalidArgumentException;
+            }
         } catch (\InvalidArgumentException $e) {
             throw $this->createNotFoundException('The photo doesn\'t exist');
         }

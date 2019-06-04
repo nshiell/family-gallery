@@ -38,7 +38,7 @@ class ImageVariantCollection implements \ArrayAccess
             throw new \InvalidArgumentException;
         }
 
-        if (!$this->variants[$variant]) {
+        if (!isset ($this->variants[$variant])) {
             try {
                 $this->variants[$variant] = new File(
                     $this->targetDirectory . $this->id . '/' . $variant . '.' . $this->extension);

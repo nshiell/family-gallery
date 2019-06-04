@@ -13,9 +13,6 @@ parameters:
         thumbnail:
             width: 300
             height: 200
-        thumbnail1:
-            width: 300
-            height: 200
 
 services:
     # default configuration for services in *this* file
