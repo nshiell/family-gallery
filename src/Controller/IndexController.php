@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Image;
+use App\Form\ImageType;
 use App\Repository\ImageRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -45,8 +46,13 @@ class IndexController extends AbstractController
         }
 
         if ($session->get('is-human') || $this->getUser()) {
+            $form = $this->createForm(ImageType::class, null, [
+                'action' => $this->generateUrl('image_new')
+            ]);
+
             return $this->render('index/list.html.twig', [
                 'images' => $imageRepository->findAll(),
+                'form' => $form->createView(),
             ]);
         }
 

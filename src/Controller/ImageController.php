@@ -56,7 +56,7 @@ class ImageController extends AbstractController
             $entityManager->persist($image);
             $entityManager->flush();
 
-            return $this->redirectToRoute('image_index');
+            return $this->redirectToRoute('index');
         }
 
         return $this->render('image/new.html.twig', [

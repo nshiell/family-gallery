@@ -3,9 +3,9 @@
 {% block title %}Image index{% endblock %}
 
 {% block body %}
-    {#% if app.user %}
+    {% if app.user %}
          {{ include('image/_form.html.twig') }}
-    {% endif %#}
+    {% endif %}
 
     <ul class="thumbnails lazy-load-images">
         {% for image in images|reverse %}
@@ -25,8 +25,4 @@
             </li>
         {% endfor %}
     </ul>
-{% endblock %}
-
-{% block javascripts %}
-    <script src="/js/jquery.lazy.js"></script>
 {% endblock %}
