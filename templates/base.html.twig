@@ -9,25 +9,16 @@
     <link rel="stylesheet" href="/css/flexboxgrid.css" />
     <link rel="stylesheet" href="/css/page.css" />
     {% block stylesheets %}{% endblock %}
+
+    <script src="/js/jquery.js"></script>
+    <script src="/js/page.js"></script>
+
     {% block javascripts %}{% endblock %}
 </head>
 <body>
-    <div class="nav-container">
-        <nav>
-            <!--<ul class="row icons">
-                <li class="col-xs">
-                    <a href="/profile">
-                        <i class="icon ion-ios-person"></i>
-                    </a>
-                </li>
-                <li class="col-xs">
-                    <a href="/logout">
-                        <i class="icon ion-android-add-circle"></i>
-                    </a>
-                </li>
-            </ul>-->
-        </nav>
-    </div>
+    {% if app.user is null and app.request.get('_route') != 'app_login' %}
+         <a href="{{ path('app_login') }}">Login to upload some more photos</a>
+    {% endif %}
 
     <main>
         {% block body %}{% endblock %}

@@ -19,7 +19,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/", name="index", methods={"GET","POST"})
      */
-    public function new(Request $request, ImageRepository $imageRepository): Response
+    public function index(Request $request, ImageRepository $imageRepository): Response
     {
         $session = new Session();
         $error = null;

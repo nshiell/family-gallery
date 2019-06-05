@@ -15,7 +15,7 @@ class ImageType extends AbstractType
     {
         $builder
             // ...
-            ->add('original_filename', FileType::class, ['label' => 'Brochure (PDF file)'])
+            ->add('original_filename', FileType::class, ['label' => 'Photo (JPEG file)'])
             // ...
         ;
 /*
