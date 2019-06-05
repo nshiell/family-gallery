@@ -7,22 +7,39 @@
          {{ include('image/_form.html.twig') }}
     {% endif %}
 
-    <ul class="thumbnails lazy-load-images">
+    <div class="images-container">
+        <span class="note">(Total Images: {{ images|length }})</span>
+        {% set date_set = null %}
         {% for image in images|reverse %}
-            <li>
-                <a href="{{ path('image_variant_show', {
-                    'id'      : image.id,
-                    'variant' : 'large',
-                    'filename': image.originalFilenameReal
-                    }) }}">
-                    <img src="/pics/loading.png"
-                         data-src="{{ path('image_variant_show', {
-                        'id'      : image.id,
-                        'variant' : 'thumbnail',
-                        'filename': image.originalFilenameReal
-                        }) }}" alt="{{ image.originalFilenameReal }}" />
-                </a>
-            </li>
+            {% set new_date_set = image.createdAt|date('Y-m-d') %}
+            {% if new_date_set != date_set %}
+                {% if date_set %}
+                    </ul>
+                {% endif %}
+
+                    <h2>{{ image.createdAt|date('j') }}<sup>{{
+                        image.createdAt|date('S') }}</sup>
+                           {{ image.createdAt|date('F Y') }}
+                    </h2>
+
+                {% set date_set = new_date_set %}
+                <ul class="thumbnails lazy-load-images">
+            {% endif %}
+                    <li>
+                        <a href="{{ path('image_variant_show', {
+                            'id'      : image.id,
+                            'variant' : 'large',
+                            'filename': image.originalFilenameReal
+                            }) }}">
+                            <img src="/pics/loading.png"
+                                 data-src="{{ path('image_variant_show', {
+                                'id'      : image.id,
+                                'variant' : 'thumbnail',
+                                'filename': image.originalFilenameReal
+                                }) }}" alt="{{ image.originalFilenameReal }}" />
+                        </a>
+                    </li>
         {% endfor %}
-    </ul>
+        </ul>
+    </div>
 {% endblock %}

@@ -1,15 +1,58 @@
 body {
     background-color: #000000;
     color: #FFFFFF;
+    font-family: Arial;
 }
 
 a {
     color: #CCFFFF;
 }
 
+form.image {
+    border-radius: 10px;
+    display: inline-block;
+    padding: 10px;
+    h3 {
+        cursor: default;
+        color: #BBBBBB;
+        margin: 0;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #888888;
+    }
+
+    div.image {
+        float: left;
+    }
+
+    input[type="file"] {
+        padding: 0 20px;
+    }
+    input[type="file"], button {
+        cursor: pointer;
+    }
+}
+
+.images-container {
+    h2 {
+        padding-top: 30px;
+        border-bottom: 1px solid #FFFFFF;
+        cursor: default;
+    }
+
+    .note {
+        font-size: 12px;
+    }
+}
+
 ul.thumbnails {
     padding: 0;
     margin: 0;
+
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
 
     li {
         padding: 20px;
@@ -18,8 +61,12 @@ ul.thumbnails {
         line-height: 0;
 
         img {
+            transition: all .4s linear;
+            transition-property: border;
+
             border: 1px solid #444444;
             &:hover {
+                transition: all 0.3s linear;
                 border: 1px solid #FFFFFF;
             }
         }

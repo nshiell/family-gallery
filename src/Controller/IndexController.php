@@ -47,7 +47,10 @@ class IndexController extends AbstractController
 
         if ($session->get('is-human') || $this->getUser()) {
             $form = $this->createForm(ImageType::class, null, [
-                'action' => $this->generateUrl('image_new')
+                'action' => $this->generateUrl('image_new'),
+                    'attr' =>  [
+                        'class' => 'image'
+                    ]
             ]);
 
             return $this->render('index/list.html.twig', [

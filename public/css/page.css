@@ -1,21 +1,53 @@
 body {
   background-color: #000000;
-  color: #FFFFFF; }
+  color: #FFFFFF;
+  font-family: Arial; }
 
 a {
   color: #CCFFFF; }
 
+form.image {
+  border-radius: 10px;
+  display: inline-block;
+  padding: 10px; }
+  form.image h3 {
+    cursor: default;
+    color: #BBBBBB;
+    margin: 0;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #888888; }
+  form.image div.image {
+    float: left; }
+  form.image input[type="file"] {
+    padding: 0 20px; }
+  form.image input[type="file"], form.image button {
+    cursor: pointer; }
+
+.images-container h2 {
+  padding-top: 30px;
+  border-bottom: 1px solid #FFFFFF;
+  cursor: default; }
+.images-container .note {
+  font-size: 12px; }
+
 ul.thumbnails {
   padding: 0;
   margin: 0; }
+  ul.thumbnails:after {
+    content: "";
+    display: table;
+    clear: both; }
   ul.thumbnails li {
     padding: 20px;
     float: left;
     list-style: none;
     line-height: 0; }
     ul.thumbnails li img {
+      transition: all .4s linear;
+      transition-property: border;
       border: 1px solid #444444; }
       ul.thumbnails li img:hover {
+        transition: all 0.3s linear;
         border: 1px solid #FFFFFF; }
 
 form {
