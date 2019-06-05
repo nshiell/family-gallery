@@ -37,6 +37,7 @@ class ImageController extends AbstractController
      */
     public function index(ImageRepository $imageRepository): Response
     {
+        return $this->redirectToRoute('index');
         return $this->render('image/index.html.twig', [
             'images' => $imageRepository->findAll(),
         ]);
