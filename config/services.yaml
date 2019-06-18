@@ -38,15 +38,23 @@ services:
     App\Service\:
         resource: '../src/Service/*'
 
+    App\Service\ImageMaxSizes:
+        arguments:
+            $imageMaxSizes: '%image_max_sizes%'
+
+    App\Service\ImageProcessor:
+        arguments:
+            $targetDirectory: '%images_dir%'
+            $imageMaxSizes: '@App\Service\ImageMaxSizes'
+
     App\Service\Uploader:
         arguments:
             $targetDirectory: '%images_dir%'
-            $imageMaxSizes: '%image_max_sizes%'
 
     App\Service\ImageVariantCollectionFactory:
         arguments:
             $targetDirectory: '%images_dir%'
-            $imageMaxSizes: '%image_max_sizes%'
+            $imageMaxSizes: '@App\Service\ImageMaxSizes'
 
     App\EventListener\ImageUploadListener:
         tags:
