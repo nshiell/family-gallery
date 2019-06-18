@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Collections\ImageVariantCollection;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\ImageRepository")
@@ -21,8 +22,6 @@ class Image
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank(message="Upload a photo")
-     * @Assert\File(mimeTypes={ "image/jpeg" })
      */
     private $original_filename;
 
@@ -54,6 +53,54 @@ class Image
 
     private $variantCollection;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $rotation;
+
+    /**
+     * @ORM\Column(type="string", length=20)
+     */
+    private $calculated_extension;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $temp_filename;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $rotation_forced;
+
+    /**
+     * @var UploadedFile
+     * @Assert\NotBlank(message="Upload a photo")
+     * @Assert\File(
+        maxSize = "3M",
+        mimeTypes={ "image/jpeg" })
+     */
+    private $file;
+
+    public function setFile(UploadedFile $file)
+    {
+        if ($this->getId()) {
+            throw new \LogicException('Cannot upload a file to an entity that is already persistent');
+        }
+
+        $this->file = $file;
+        return $this;
+    }
+
+    public function getFile(): ?UploadedFile
+    {
+        if ($this->getId()) {
+            throw new \LogicException('Cannot upload a file to an entity that is already persistent');
+        }
+
+        return $this->file;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -75,14 +122,6 @@ class Image
     public function getOriginalFilename()
     {
         return $this->original_filename;
-    }
-    
-    public function getOriginalFilenameReal()
-    {
-        return substr(
-            $this->original_filename,
-            strpos(substr($this->original_filename, 10), '_') + 11
-        );
     }
 
     public function setOriginalFilename($original_filename): self
@@ -154,6 +193,9 @@ class Image
     
     public function setVariantCollection(ImageVariantCollection $variantCollection): self
     {
+        if (!$this->getId()) {
+            throw new \LogicException('Cannot access ImageVariantCollection from an entity that isn\'t persistent');
+        }
         $this->variantCollection = $variantCollection;
 
         return $this;
@@ -161,6 +203,57 @@ class Image
 
     public function getVariantCollection(): ?ImageVariantCollection
     {
+        if (!$this->getId()) {
+            throw new \LogicException('Cannot access ImageVariantCollection from an entity that isn\'t persistent');
+        }
         return $this->variantCollection;
+    }
+
+    public function getRotation(): ?int
+    {
+        return $this->rotation;
+    }
+
+    public function setRotation(int $rotation): self
+    {
+        $this->rotation = $rotation;
+
+        return $this;
+    }
+
+    public function getCalculatedExtension(): ?string
+    {
+        return $this->calculated_extension;
+    }
+
+    public function setCalculatedExtension(string $calculated_extension): self
+    {
+        $this->calculated_extension = $calculated_extension;
+
+        return $this;
+    }
+
+    public function getTempFilename(): ?string
+    {
+        return $this->temp_filename;
+    }
+
+    public function setTempFilename(?string $temp_filename): self
+    {
+        $this->temp_filename = $temp_filename;
+
+        return $this;
+    }
+
+    public function getRotationForced(): ?bool
+    {
+        return $this->rotation_forced;
+    }
+
+    public function setRotationForced(bool $rotation_forced): self
+    {
+        $this->rotation_forced = $rotation_forced;
+
+        return $this;
     }
 }
