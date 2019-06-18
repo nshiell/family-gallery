@@ -45,6 +45,8 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     echo "en_GB.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen
 
+RUN apt-get update && apt-get install -y git zip unzip && docker-php-ext-install zip
+
 WORKDIR /home/wwwroot/
 
 EXPOSE 9000
