@@ -30,7 +30,7 @@ class ImageVariantController extends AbstractController
 
         // getFilename getPath
         $response = new Response();
-        $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $file->getFilename());
+        $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, $image->getOriginalFilename());
         $response->headers->set('Content-Disposition', $disposition);
         $response->headers->set('Content-Type', 'image/jpeg');
         $response->setContent(file_get_contents($file->getRealPath()));
