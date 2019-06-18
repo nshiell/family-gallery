@@ -1,75 +1,111 @@
 <?php
 namespace App\Service;
 
-use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Intervention\Image\ImageManagerStatic;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\Finder\Finder;
-
+use App\Service\ImageOrientationResolver;
+use App\Service\ImageProcessor;
 use App\Entity\Image;
 
+/**
+ * Call self->moveToImagesDirWithTempFileName on upload
+ * to move the image out of the OS temp dir and associate with the $image entity
+ * (maybe on a Doctrine postPersist)?
+ *
+ * Call self->moveImageToIdAndMakeSizes to associate created image variants binaries
+ */
 class Uploader
 {
+    const TEMP_FILENAME     = 'temp';
+    const ORIGINAL_FILENAME = 'original';
+
+    /** @var string */
     private $targetDirectory;
 
-    private $imageMaxSizes;
-
+    /** @var Filesystem */
     private $filesystem;
 
-    public function __construct(Filesystem $filesystem, $targetDirectory, array $imageMaxSizes)
-    {
-        if (!$this->validateImageMaxSizes($imageMaxSizes)) {
-            throw new \InvalidArgumentException('Invalid imageMaxSizes');
-        }
+    /** @var ImageOrientationResolver */
+    private $imageOrientationResolver;
 
+    /** @var ImageProcessor */
+    private $imageProcessor;
+
+    public function __construct(ImageOrientationResolver $imageOrientationResolver,
+                                Filesystem               $filesystem,
+                                ImageProcessor           $imageProcessor,
+                                string                   $targetDirectory)
+    {
+        $this->imageOrientationResolver = $imageOrientationResolver;
         $this->filesystem = $filesystem;
-        $this->imageMaxSizes = $imageMaxSizes;
         $this->targetDirectory = $targetDirectory;
+        $this->imageProcessor = $imageProcessor;
     }
 
     /**
+     * Call this before this entity has a database ID
+     * (i.e. before persist flush has occured)
+     *
+     * Moves the upload away from the OS temp dir
+     * the image will be renamed original.$extension
+     * and placed in a dir with a random name in our images dir
+     * the random name will be stored in the entity
+     * also gets dimetions and if the camera was at an angle when the photo was taken
+     *
      * @throws \Symfony\Component\HttpFoundation\File\Exception\FileException
      */
-    public function moveToImagesDirWithTempFileName(UploadedFile $file, Image $entity)
+    public function moveToImagesDirWithTempFileName(Image $entity)
     {
-        $originalNewName = sprintf('original.%s', $file->guessExtension());
-        $originalNewPathPrefix = sprintf('temp_%s_%s',
-            md5(uniqid()),
-            $entity->getOriginalFilename()->getClientOriginalName()
+        $file = $entity->getFile();
+        $rand = uniqid();
+
+        $entity->setTempFilename($rand);
+        $entity->setCalculatedExtension($file->guessExtension());
+        $entity->setOriginalFilename($file->getClientOriginalName());
+
+        $newTempDir = $this->targetDirectory
+            . DIRECTORY_SEPARATOR
+            . $rand;
+
+        $newTempPath = $newTempDir
+            . DIRECTORY_SEPARATOR
+            . self::TEMP_FILENAME;
+
+            $fileAfterMove = $file->move(
+            $newTempDir,
+            self::TEMP_FILENAME
         );
 
-        $file->move(
-            $this->targetDirectory . '/' . $originalNewPathPrefix,
-            $originalNewName
-        );
-
-        list($width, $height) = getimagesize(
-            $this->targetDirectory
-            . '/' . $originalNewPathPrefix . '/'
-            . $originalNewName
-        );
+        list($width, $height) = getimagesize($newTempPath);
 
         $entity->setWidth($width);
         $entity->setHeight($height);
-
-        $entity->setOriginalFilename($originalNewPathPrefix);
-
-        return $originalNewPathPrefix;
+        $entity->setRotation(
+            $this->imageOrientationResolver->getDegrees($fileAfterMove)
+        );
     }
 
-    public function moveImageToIdAndMakeSizes(Image $entity)
+    /**
+     * Call this immediately after the database persist has occured
+     * so that the image entity now has a database
+     * renames the temporary directory to the primary key of the image
+     * executes all resizes and rotations on the image
+     * leaving the original untouched - preserving exif metadata
+
+     * @return bool true is all ok
+     */
+    public function moveImageToIdAndMakeSizes(Image $entity): bool
     {
         $id = $entity->getId();
+
         if (!$id) {
             return false;
         }
 
-        $originalFilename = $entity->getOriginalFilename();
+        $tempFilename = $entity->getTempFilename();
         $imagesForEntityTempDir = $this->targetDirectory .
-            '/' . $originalFilename;
+            DIRECTORY_SEPARATOR . $tempFilename;
 
-        if (!$originalFilename || !$imagesForEntityTempDir) {
+        if (!$tempFilename) {
             return false;
         }
 
@@ -77,81 +113,27 @@ class Uploader
             return false;
         }
 
-        $imagesForEntityDir = $this->targetDirectory . '/' . $id;
+        $imagesForEntityDir = $this->targetDirectory
+            . DIRECTORY_SEPARATOR
+            . $id;
         
-        $this->filesystem->rename($imagesForEntityTempDir, $imagesForEntityDir);
+        $this->filesystem->rename(
+            $imagesForEntityTempDir,
+            $imagesForEntityDir
+        );
 
-        $finder = new Finder();
-        $finder->files()->in($imagesForEntityDir);
+        $this->filesystem->rename(
+            $imagesForEntityDir
+                . DIRECTORY_SEPARATOR
+                . self::TEMP_FILENAME,
 
-        if ($finder->hasResults()) {
-            $originalPath = null;
-            $i = 0;
-            foreach ($finder as $file) {
-                if (substr($file->getFilename(), 0, 8) == 'original') {
-                    $originalPath = $file->getRealPath();
-                }
-                $i++;
-            }
+            $imagesForEntityDir
+                . DIRECTORY_SEPARATOR
+                . self::ORIGINAL_FILENAME
+                . '.' . $entity->getCalculatedExtension()
+        );
 
-            if ($i == 1 && $originalPath) {
-                foreach ($this->imageMaxSizes as $type => $imageMaxSize) {
-                    $this->resize($originalPath, $type, $imageMaxSize, $id);
-                }
-            }
-        }
-        
-        return true;
-    }
-
-    private function validateImageMaxSizes($imageMaxSizes)
-    {
-        foreach ($imageMaxSizes as $type => $imageMaxSize) {
-            if (!isset ($imageMaxSize['width'])) {
-                return false;
-            }
-
-            if (!is_int($imageMaxSize['width'])) {
-                return false;
-            }
-
-            if (!$imageMaxSize['width']) {
-                return false;
-            }
-
-            if (!isset ($imageMaxSize['height'])) {
-                return false;
-            }
-
-            if (!is_int($imageMaxSize['height'])) {
-                return false;
-            }
-
-            if (!$imageMaxSize['height']) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-    
-    private function resize(string $originalPath, string $type, array $imageMaxSize, int $id)
-    {
-        $originalPathPartsDot = explode('.', $originalPath);
-        $ext = array_pop($originalPathPartsDot) ?? 'jpeg';
-
-        $img = ImageManagerStatic::make($originalPath);
-        
-        $img->resize($imageMaxSize['width'], null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
-
-        $img->resize(null, $imageMaxSize['height'], function ($constraint) {
-            $constraint->aspectRatio();
-        });
-
-        $img->save($this->targetDirectory . '/' . $id . '/' . $type . '.' . $ext);
-
+        $this->imageProcessor->resizeAndRotate($entity);
         return true;
     }
 }

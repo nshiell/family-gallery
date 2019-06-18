@@ -8,15 +8,17 @@ use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Security\Core\Security;
-//use App\Collections\ImageVariantCollection;
 use App\Service\ImageVariantCollectionFactory;
 
 class ImageUploadListener
 {
+    /** @var Uploader */
     private $uploader;
 
+    /** @todo remove tight coupling with Symfony here */
     private $processOwnerUserFinder;
 
+    /** @var ImageVariantCollectionFactory */
     private $imageVariantCollectionFactory;
 
     public function __construct(Uploader $uploader,
@@ -31,6 +33,7 @@ class ImageUploadListener
     public function postLoad(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
+        // Give an Image an imageVariantCollection instance
         if ($entity instanceof Image) {
             try {
                 $entity->setVariantCollection(
@@ -44,13 +47,12 @@ class ImageUploadListener
     {
         $entity = $args->getEntity();
 
-        // upload only works for Image entities
         if (!$entity instanceof Image) {
             return;
         }
-    
-        $file = $entity->getOriginalFilename();
-        if ($file instanceof UploadedFile && !$entity->getWidth()) {
+
+        // Fish the image out of the OS temp dir
+        if ($entity->getFile() instanceof UploadedFile && !$entity->getId()) {
             $this->uploadFile($entity);
         }
     }
@@ -59,21 +61,20 @@ class ImageUploadListener
     {
         $entity = $args->getObject();
 
+        // Finalize Image upload not we have a database ID
         if ($entity instanceof Image) {
             $this->uploader->moveImageToIdAndMakeSizes($entity);
-        }
+        };
     }
 
     private function uploadFile($entity)
     {
-        // upload only works for Image entities
         if (!$entity instanceof Image) {
             return;
         }
 
-        $file = $entity->getOriginalFilename();
         $entity->setDescription('');
-        
+
         if (!$entity->getCreatedAt()) {
             $entity->setCreatedAt(new \DateTime);
         }
@@ -82,8 +83,6 @@ class ImageUploadListener
             $entity->setUserId($this->processOwnerUserFinder->getUser());
         }
 
-        if ($file instanceof UploadedFile) {
-            $this->uploader->moveToImagesDirWithTempFileName($file, $entity);
-        }
+        $this->uploader->moveToImagesDirWithTempFileName($entity);
     }
 }
