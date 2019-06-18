@@ -36,6 +36,8 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
 
 RUN docker-php-ext-install pdo pdo_mysql mysqli
 
+RUN docker-php-ext-install mbstring exif
+
 RUN usermod -u 1000 www-data
 
 RUN rm -rf /var/lib/apt/lists/*
