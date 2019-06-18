@@ -4,6 +4,21 @@ use App\Kernel;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
+//On production environments
+error_reporting(0);
+ini_set("memory_limit", "1000M");
+function fatalErrorHandler() {
+    $error = error_get_last();
+    if ($error) {
+        file_put_contents(__DIR__ . '/../var/log/sup-errors.log', json_encode($error), FILE_APPEND);
+        header('HTTP/1.1 500 Internal Server Error');
+        echo '<h1>Sorry the website just had an error</h1>Go <a href="#" onclick="window.history.back(); return false">Back</a>';
+    }
+}
+
+# Registering shutdown function
+register_shutdown_function('fatalErrorHandler');
+
 require dirname(__DIR__).'/config/bootstrap.php';
 
 if ($_SERVER['APP_DEBUG']) {
