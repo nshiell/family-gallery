@@ -29,14 +29,14 @@
                         <a href="{{ path('image_variant_show', {
                             'id'      : image.id,
                             'variant' : 'large',
-                            'filename': image.originalFilenameReal
-                            }) }}">
+                            'filename': image.originalFilename
+                            }) }}?cb=1">
                             <img src="/pics/loading.png"
                                  data-src="{{ path('image_variant_show', {
                                 'id'      : image.id,
                                 'variant' : 'thumbnail',
-                                'filename': image.originalFilenameReal
-                                }) }}" alt="{{ image.originalFilenameReal }}" />
+                                'filename': image.originalFilename
+                                }) }}" alt="{{ image.originalFilename }}" />
                         </a>
                     </li>
         {% endfor %}

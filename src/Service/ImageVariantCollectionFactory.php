@@ -4,12 +4,15 @@ namespace App\Service;
 use App\Collections\ImageVariantCollection;
 use App\Entity\Image;
 
+/**
+ * Maybe use this in a Doctrine onload event images an ImageVariantCollection?
+ */
 class ImageVariantCollectionFactory
 {
     private $targetDirectory;
     private $imageMaxSizes;
 
-    public function __construct(string $targetDirectory, array $imageMaxSizes)
+    public function __construct(string $targetDirectory, ImageMaxSizes $imageMaxSizes)
     {
         $this->targetDirectory = $targetDirectory;
         $this->imageMaxSizes = $imageMaxSizes;
@@ -22,22 +25,9 @@ class ImageVariantCollectionFactory
             throw new \InvalidArgumentException;
         }
 
-        $originalFilename = $image->getOriginalFilename();
-        $realOriginalFilename = substr(
-            $originalFilename,
-            strpos(substr($originalFilename, 10), '_') + 11
-        );
-
-        if (strpos($realOriginalFilename, '.') !== false) {
-            $partsOnDot = explode('.', $realOriginalFilename);
-            $extension = array_pop($partsOnDot);
-        } else {
-            $extension = 'jpeg';
-        }
-
         return new ImageVariantCollection(
             $id,
-            $extension,
+            $image->getCalculatedExtension(),
             $this->imageMaxSizes,
             $this->targetDirectory
         );

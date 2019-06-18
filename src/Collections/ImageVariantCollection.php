@@ -4,6 +4,8 @@ namespace App\Collections;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 
+Use App\Service\ImageMaxSizes;
+
 class ImageVariantCollection implements \ArrayAccess
 {
     private $id;
@@ -11,23 +13,25 @@ class ImageVariantCollection implements \ArrayAccess
     private $extension;
     private $targetDirectory;
 
-    public function __construct(int $id,
-                                string $extension,
-                                array $variants,
-                                string $targetDirectory)
+    public function __construct(int           $id,
+                                string        $extension,
+                                ImageMaxSizes $imageMaxSizes,
+                                string        $targetDirectory)
     {
         $this->id = $id;
+        $variants = $imageMaxSizes->getVariantNames();
         if (!in_array('original', $variants)) {
             $variants[] = 'original';
         }
-        
+
         $this->variants = array_fill_keys(array_keys($variants), null);
 
-//        $this->variants = array_fill_keys($variants, null);
-        /** @todo pass in the guessed extension */
         if (strtolower($extension) == 'jpg') {
             $extension = 'jpeg';
+        } elseif (!trim($extension)) {
+            $extension = 'jpeg';
         }
+
         $this->extension = $extension;
         $this->targetDirectory = $targetDirectory;
     }
@@ -41,7 +45,11 @@ class ImageVariantCollection implements \ArrayAccess
         if (!isset ($this->variants[$variant])) {
             try {
                 $this->variants[$variant] = new File(
-                    $this->targetDirectory . $this->id . '/' . $variant . '.' . $this->extension);
+                    $this->targetDirectory
+                    . $this->id
+                    . DIRECTORY_SEPARATOR
+                    . $variant . '.' . $this->extension
+                );
             } catch (FileNotFoundException $e) {
                 return null;
             }
