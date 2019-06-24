@@ -28,6 +28,15 @@ security:
                     - App\Security\LoginFormAuthenticator
             # https://symfony.com/doc/current/security/form_login_setup.html
 
+            remember_me:
+                secret:   '%kernel.secret%'
+                #lifetime: 1209600 # 2 weeks in seconds
+                path:     /
+                # by default, the feature is enabled by checking a
+                # checkbox in the login form (see below), uncomment the
+                # following line to always enable it.
+                always_remember_me: true
+
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
