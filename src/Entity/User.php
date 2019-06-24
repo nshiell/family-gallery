@@ -43,9 +43,39 @@ class User implements UserInterface
      */
     private $images;
 
+    /**
+     * The collection of aliases that I use to address each family member
+     * i.e. Mum, Dad etc, the relationship here will also link back to the actual user
+     * basically a mamy-to-many with metadata
+     * This allows each family member to have a personal view of people using
+     * more personal names specific to each person
+     *
+     * @var Collection|RelativeAlias[]
+     * @ORM\OneToMany(targetEntity="App\Entity\RelativeAlias", mappedBy="userId", orphanRemoval=true)
+     */
+    private $relativeAliases;
+
+    /**
+     * The collection of all the names that people call me by
+     * with a link to who calls me by that name
+     *
+     * This collection will not be de-dupped
+     * as you might heve sevral people calling you Mum etc
+     *
+     * i.e. Dad is how I'm addressed by Joe Bloggs
+     *      Bro is how I'm addressed by Fred Bloggs
+     *      Sonny is how I'm addressed by Old Man Bloggs
+     *
+     * @var Collection|RelativeAlias[]
+     * @ORM\OneToMany(targetEntity="App\Entity\RelativeAlias", mappedBy="relativeUserId", orphanRemoval=true)
+     */
+    private $aliasesForMe;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->user = new ArrayCollection();
+        $this->subjectUserId = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -155,5 +185,36 @@ class User implements UserInterface
     public function __toString()
     {
         return $this->getUsername();
+    }
+
+    /**
+     * @return Collection|RelativeAlias[]
+     */
+    public function getRelativeAliases(): Collection
+    {
+        return $this->relativeAliases;
+    }
+
+    public function addRelativeAlias(RelativeAlias $relativeAlias): self
+    {
+        if (!$this->relativeAliases->contains($relativeAlias)) {
+            $this->relativeAliases[] = $relativeAlias;
+            $relativeAlias->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeRelativeAlias(RelativeAlias $relativeAlias): self
+    {
+        if ($this->relativeAliases->contains($relativeAlias)) {
+            $this->relativeAliases->removeElement($relativeAlias);
+            // set the owning side to null (unless already changed)
+            if ($relativeAlias->getUser() === $this) {
+                $user->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

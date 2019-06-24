@@ -38,6 +38,9 @@
                                 'filename': image.originalFilename
                                 }) }}" alt="{{ image.originalFilename }}" />
                         </a>
+                        <a href="{{ path('user_show', {
+                            'id': image.userId.id
+                        }) }}">{{ relationName(image.userId) }}</a>
                     </li>
         {% endfor %}
         </ul>

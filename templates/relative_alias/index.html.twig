@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}RelativeAlias index{% endblock %}
+
+{% block body %}
+    <h1>RelativeAlias index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Alias</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for relative_alias in relative_aliases %}
+            <tr>
+                <td>{{ relative_alias.alias }}</td>
+                <td>
+                    <a href="{{ path('relative_alias_show', {'user': relative_alias.user}) }}">show</a>
+                    <a href="{{ path('relative_alias_edit', {'user': relative_alias.user}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="2">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('relative_alias_new') }}">Create new</a>
+{% endblock %}
