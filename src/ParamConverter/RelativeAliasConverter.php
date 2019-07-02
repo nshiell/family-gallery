@@ -55,17 +55,23 @@ class RelativeAliasConverter implements ParamConverterInterface
         $relativeUserId = $request->attributes->get('relativeUser');
         $user = $this->security->getUser();
         if ($relativeUserId === null) {
-            throw new \InvalidArgumentException('relativeUser attribute is missing');
+            throw new \InvalidArgumentException(
+                'relativeUser attribute is missing'
+            );
         }
 
         if (!$user) {
             throw new \RuntimeException('user not Login');
         }
 
-        $relativeAlias = $this->relativeAliasRepo->findOneByIdForCurrentUser($relativeUserId, $user);
+        $relativeAlias = $this->relativeAliasRepo
+            ->findOneByIdForCurrentUser($relativeUserId, $user);
 
         if (!$relativeAlias) {
-            $relativeAlias = new RelativeAlias($user, $this->userRepository->find($relativeUserId));
+            $relativeAlias = new RelativeAlias(
+                $user,
+                $this->userRepository->find($relativeUserId)
+            );
         }
 
         $request->attributes->set($configuration->getName(), $relativeAlias);

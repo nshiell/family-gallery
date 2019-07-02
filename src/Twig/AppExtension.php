@@ -30,7 +30,6 @@ class AppExtension extends AbstractExtension
             return '';
         }
 
-        $relationUsername = $relatedUser->getUsername();
         if ($relatedUser === $currentUser) {
             return $meAlias;
         }
@@ -40,8 +39,6 @@ class AppExtension extends AbstractExtension
             'relativeUser' => $relatedUser
         ]);
 
-        return ($alias)
-            ? $alias->getAlias()
-            : $relatedUser->getUsername();
+        return ($alias) ? $alias->getAlias() : '';
     }
 }

@@ -42,8 +42,18 @@
                                 'relativeUser': image.userId.id
                             }) }}" class="relation">
 
-                            <span class="alias">{{ relationName(image.userId) }}</span>
-                            <span class="username">({{ image.userId.username }})<span>
+                            {% if relationName(image.userId) %}
+                                <span class="alias">
+                                    {{ relationName(image.userId) }}
+                                </span>
+                                <span class="username lowlight">
+                                    ({{ image.userId.username }})
+                                <span>
+                            {% else %}
+                                <span class="username">
+                                    {{ image.userId.username }}
+                                <span>
+                            {% endif %}
                         </a>
                     </li>
         {% endfor %}
