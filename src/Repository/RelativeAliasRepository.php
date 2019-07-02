@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use App\Entity\RelativeAlias;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -19,32 +20,15 @@ class RelativeAliasRepository extends ServiceEntityRepository
         parent::__construct($registry, RelativeAlias::class);
     }
 
-    // /**
-    //  * @return RelativeAlias[] Returns an array of RelativeAlias objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function findOneByIdForCurrentUser(int $id, User $currentUser): ?RelativeAlias
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('ra');
 
-    /*
-    public function findOneBySomeField($value): ?RelativeAlias
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
+        return $qb->andWhere($qb->expr()->eq('IDENTITY(ra.relativeUser)', $id))
+            ->andWhere('ra.user = :currentUser')
+            ->setParameter('currentUser', $currentUser)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
 }
