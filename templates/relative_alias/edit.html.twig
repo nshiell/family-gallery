@@ -3,11 +3,5 @@
 {% block title %}Edit RelativeAlias{% endblock %}
 
 {% block body %}
-    <h1>Edit RelativeAlias</h1>
-
     {{ include('relative_alias/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('relative_alias_index') }}">back to list</a>
-
-    {{ include('relative_alias/_delete_form.html.twig') }}
 {% endblock %}

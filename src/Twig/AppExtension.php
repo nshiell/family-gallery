@@ -23,27 +23,25 @@ class AppExtension extends AbstractExtension
         ];
     }
 
-    public function relationName(User $relation,
-                                 string $meString = 'you',
-                                 string $nameFormat = '%s (%s)')
+    public function relationName(User $relatedUser, string $meAlias = 'you')
     {
-        $user = $this->processOwnerUserFinder->getUser();
-        if (!$user) {
+        $currentUser = $this->processOwnerUserFinder->getUser();
+        if (!$currentUser) {
             return '';
         }
 
-        $relationUsername = $relation->getUsername();
-        if ($relation === $user) {
-            return sprintf($nameFormat, $meString, $relationUsername);
+        $relationUsername = $relatedUser->getUsername();
+        if ($relatedUser === $currentUser) {
+            return $meAlias;
         }
 
         $alias = $this->relativeAliasRepository->findOneBy([
-            'user'         => $user,
-            'relativeUser' => $relation
+            'user'         => $currentUser,
+            'relativeUser' => $relatedUser
         ]);
 
         return ($alias)
-            ? sprintf($nameFormat, $alias, $relationUsername)
-            : $relation->getUsername();
+            ? $alias->getAlias()
+            : $relatedUser->getUsername();
     }
 }

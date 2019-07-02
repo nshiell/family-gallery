@@ -38,9 +38,13 @@
                                 'filename': image.originalFilename
                                 }) }}" alt="{{ image.originalFilename }}" />
                         </a>
-                        <a href="{{ path('user_show', {
-                            'id': image.userId.id
-                        }) }}">{{ relationName(image.userId) }}</a>
+                        <a href="{{ path('relative_alias_edit', {
+                                'relativeUser': image.userId.id
+                            }) }}" class="relation">
+
+                            <span class="alias">{{ relationName(image.userId) }}</span>
+                            <span class="username">({{ image.userId.username }})<span>
+                        </a>
                     </li>
         {% endfor %}
         </ul>
