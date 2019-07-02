@@ -49,6 +49,13 @@ ul.thumbnails {
       ul.thumbnails li img:hover {
         transition: all 0.3s linear;
         border: 1px solid #FFFFFF; }
+    ul.thumbnails li .relation {
+      display: block;
+      padding-top: 10px;
+      text-align: center;
+      text-decoration: none; }
+      ul.thumbnails li .relation .username {
+        color: #3388AA; }
 
 form {
   border: 1px solid #FFFFFF;

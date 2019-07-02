@@ -70,6 +70,17 @@ ul.thumbnails {
                 border: 1px solid #FFFFFF;
             }
         }
+
+        .relation {
+            display: block;
+            padding-top: 10px;
+            text-align: center;
+            text-decoration: none;
+
+            .username {
+                color: #3388AA;
+            }
+        }
     }
 }
 

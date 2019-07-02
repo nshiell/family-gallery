@@ -5,10 +5,15 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Repository\RelativeAliasRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Symfony\Component\Security\Core\User\UserInterface;
+use App\Entity\RelativeAlias;
+use App\Form\RelativeAliasType;
 
 /**
  * @Route("/admin/user")
@@ -51,11 +56,28 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="user_show", methods={"GET"})
      */
-    public function show(User $user): Response
+    public function show(User $user,
+                         UserInterface $currentUser,
+                         RelativeAliasRepository $relativeAliasRepository): Response
     {
-        return $this->render('user/show.html.twig', [
-            'user' => $user,
-        ]);
+        //$relativeAlias = new RelativeAlias($currentUser, $user);
+        $parameters = ['user' => $user];
+
+        if ($user !== $currentUser) {
+            $relativeAlias = $relativeAliasRepository->findOneBy([
+                'user'         => $currentUser,
+                'relativeUser' => $user
+            ]);
+
+            if (!$relativeAlias) {
+                $relativeAlias = new RelativeAlias;
+            }
+
+            $form = $this->createForm(RelativeAliasType::class, $relativeAlias);
+            $parameters['form'] = $form->createView();
+        }
+
+        return $this->render('user/show.html.twig', $parameters);
     }
 
     /**
