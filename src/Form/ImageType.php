@@ -14,10 +14,16 @@ class ImageType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('file', FileType::class, ['label' => 'Photo (JPEG file)'])
+            ->add('file', FileType::class, [
+                'label' => 'Photo (JPEG file)',
+                'attr'  => [
+                    'accept' => 'image/*'
+                ]
+            ])
+
             ->add('rotation_forced', null, [
                 'label' => 'Turn it right way around if it\'s a portrait selfie',
-                'data'  => true
+                'data'  => true,
             ])
         ;
     }
